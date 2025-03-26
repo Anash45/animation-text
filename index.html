@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Shuffle Effect</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .heading {
+            font-size: 50px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .ft-box{
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            justify-content: space-between;
+            padding: 30px;
+            min-height: 300px;
+            background-color: rgba(85, 185, 245, 1);
+        }
+
+        .changing-text{
+            font-size: 24px;
+        }
+
+        .ft-simple-text{
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="ft-box">
+        <div class="changing-text"></div>
+        <div class="ft-box-bottom">
+            <div class="heading shuffle-text">Award winning.</div>
+            <p class="ft-simple-text">We help businesses and brands connect with customers and influencers more effectively. From major multinationals to small businesses, throughout the funnel, we leverage innovative thinking and new technology without the constraints and overheads of traditional players.</p>
+        </div>
+    </div>
+    <script>
+        const lines = [
+            "Adding over $200MM value to an acquisition target.",
+            "The largest ever launch of an asset manager.",
+            "Award winning launch of a Fintech portfolio brand.",
+            "Award winning repositioning of a consumer tech giant for a B2B audience.",
+            "B2B positioning, content and social for the largest global social media company.",
+            "Award winning innovation in experiential and content for a global tech manufacturer.",
+            "Industry leading environmental thought leadership for partnership between a global management consultancy and an oil major."
+        ];
+
+        function shuffleText(element, text, callback) {
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            element.textContent = "";
+            let output = new Array(text.length).fill(" ");
+            let i = 0;
+
+            function revealNextLetter() {
+                if (i >= text.length) {
+                    if (callback) setTimeout(callback, 1000);
+                    return;
+                }
+                if (text[i] === " ") {
+                    output[i] = " ";
+                    i++;
+                    revealNextLetter();
+                    return;
+                }
+
+                let count = 0;
+                let iterations = 10;
+                const interval = setInterval(() => {
+                    output[i] = chars[Math.floor(Math.random() * chars.length)];
+                    element.textContent = output.join("");
+                    if (++count >= iterations) {
+                        clearInterval(interval);
+                        output[i] = text[i];
+                        element.textContent = output.join("");
+                        i++;
+                        setTimeout(revealNextLetter, 10);
+                    }
+                }, 1);
+            }
+            
+            revealNextLetter();
+        }
+
+        function removeText(element, text, callback) {
+            let i = text.length - 1;
+            let output = text.split("");
+
+            function hideNextLetter() {
+                if (i < 0) {
+                    setTimeout(callback, 500);
+                    return;
+                }
+                if (text[i] === " ") {
+                    i--;
+                    hideNextLetter();
+                    return;
+                }
+                
+                output[i] = " ";
+                element.textContent = output.join("");
+                i--;
+                setTimeout(hideNextLetter, 20);
+            }
+            
+            hideNextLetter();
+        }
+
+        function startLoop(index = 0) {
+            const element = document.querySelector(".changing-text");
+            shuffleText(element, lines[index], () => {
+                removeText(element, lines[index], () => {
+                    startLoop((index + 1) % lines.length);
+                });
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll(".shuffle-text").forEach(el => shuffleText(el, el.textContent));
+            startLoop();
+        });
+    </script>
+</body>
+</html>
