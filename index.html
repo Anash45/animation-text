@@ -9,26 +9,30 @@
             font-family: Arial, sans-serif;
         }
         .heading {
-            font-size: 50px;
+            font-size: 150px;
+            line-height: 100%;
             font-weight: bold;
             margin-bottom: 20px;
         }
         .ft-box{
+            width: 1320px;
             display: flex;
             flex-direction: column;
             gap: 40px;
             justify-content: space-between;
             padding: 30px;
-            min-height: 300px;
+            min-height: 800px;
             background-color: rgba(85, 185, 245, 1);
         }
 
         .changing-text{
-            font-size: 24px;
+            font-size: 54px;
+            line-height: 100%;
         }
 
         .ft-simple-text{
-            font-size: 16px;
+            font-size: 32px;
+            line-height: 100%;
         }
     </style>
 </head>
@@ -41,87 +45,85 @@
         </div>
     </div>
     <script>
-        const lines = [
-            "Adding over $200MM value to an acquisition target.",
-            "The largest ever launch of an asset manager.",
-            "Award winning launch of a Fintech portfolio brand.",
-            "Award winning repositioning of a consumer tech giant for a B2B audience.",
-            "B2B positioning, content and social for the largest global social media company.",
-            "Award winning innovation in experiential and content for a global tech manufacturer.",
-            "Industry leading environmental thought leadership for partnership between a global management consultancy and an oil major."
+        const textGroups = [
+            ["Adding over $200MM value to an acquisition target."],
+            ["The largest ever launch of an asset manager."],
+            ["Award winning launch of a Fintech portfolio brand."],
+            ["Award winning repositioning of a consumer", "tech giant for a B2B audience."],
+            ["B2B positioning, content and social for the largest", "globalsocial media company."],
+            ["Award winning innovation in", "experiential and content", "for a global tech manufacturer."],
+            ["Industry leading environmental", "thought leadership for partnership", "between a global consultancy", "and an oil major."]
         ];
 
-        function shuffleText(element, text, callback) {
+        function shuffleText(element, textLines, callback) {
+            element.innerHTML = textLines.map(line => `<div>${'&nbsp;'.repeat(line.length)}</div>`).join('');
+            const divs = element.querySelectorAll('div');
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-            element.textContent = "";
-            let output = new Array(text.length).fill(" ");
-            let i = 0;
+            let completed = 0;
 
-            function revealNextLetter() {
-                if (i >= text.length) {
-                    if (callback) setTimeout(callback, 1000);
-                    return;
-                }
-                if (text[i] === " ") {
-                    output[i] = " ";
-                    i++;
-                    revealNextLetter();
-                    return;
-                }
+            divs.forEach((div, index) => {
+                let text = textLines[index];
+                let output = new Array(text.length).fill(" ");
+                let i = 0;
 
-                let count = 0;
-                let iterations = 10;
-                const interval = setInterval(() => {
-                    output[i] = chars[Math.floor(Math.random() * chars.length)];
-                    element.textContent = output.join("");
-                    if (++count >= iterations) {
-                        clearInterval(interval);
-                        output[i] = text[i];
-                        element.textContent = output.join("");
-                        i++;
-                        setTimeout(revealNextLetter, 10);
+                function revealNextLetter() {
+                    if (i >= text.length) {
+                        completed++;
+                        if (completed === divs.length && callback) setTimeout(callback, 1000);
+                        return;
                     }
-                }, 1);
-            }
-            
-            revealNextLetter();
+                    let count = 0;
+                    let iterations = 10;
+                    const interval = setInterval(() => {
+                        output[i] = chars[Math.floor(Math.random() * chars.length)];
+                        div.textContent = output.join("");
+                        if (++count >= iterations) {
+                            clearInterval(interval);
+                            output[i] = text[i];
+                            div.textContent = output.join("");
+                            i++;
+                            setTimeout(revealNextLetter, 5);
+                        }
+                    }, 1);
+                }
+                revealNextLetter();
+            });
         }
 
-        function removeText(element, text, callback) {
-            let i = text.length - 1;
-            let output = text.split("");
+        function removeText(element, callback) {
+            const divs = element.querySelectorAll('div');
+            let completed = 0;
+            divs.forEach((div) => {
+                let text = div.textContent;
+                let output = text.split("");
+                let i = text.length - 1;
 
-            function hideNextLetter() {
-                if (i < 0) {
-                    setTimeout(callback, 500);
-                    return;
-                }
-                if (text[i] === " ") {
+                function hideNextLetter() {
+                    if (i < 0) {
+                        completed++;
+                        if (completed === divs.length && callback) setTimeout(callback, 500);
+                        return;
+                    }
+                    output[i] = " ";
+                    div.textContent = output.join("");
                     i--;
-                    hideNextLetter();
-                    return;
+                    setTimeout(hideNextLetter, 20);
                 }
-                
-                output[i] = " ";
-                element.textContent = output.join("");
-                i--;
-                setTimeout(hideNextLetter, 20);
-            }
-            
-            hideNextLetter();
+                hideNextLetter();
+            });
         }
 
         function startLoop(index = 0) {
             const element = document.querySelector(".changing-text");
-            shuffleText(element, lines[index], () => {
-                removeText(element, lines[index], () => {
-                    startLoop((index + 1) % lines.length);
+            shuffleText(element, textGroups[index], () => {
+                removeText(element, () => {
+                    startLoop((index + 1) % textGroups.length);
                 });
             });
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            document.querySelectorAll(".shuffle-text").forEach(el => shuffleText(el, el.textContent));
+            document.querySelectorAll(".shuffle-text").forEach(el => shuffleText(el, [el.textContent]));
             startLoop();
         });
     </script>

@@ -8,6 +8,7 @@
         body {
             font-family: Arial, sans-serif;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -16,90 +17,100 @@
             font-size: 2rem;
             text-align: center;
         }
+        .heading {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .changing-text div {
+            margin: 5px 0;
+        }
     </style>
 </head>
 <body>
-    <div class="shuffle-text"></div>
+    <div class="heading shuffle-text">Award winning repositioning.</div>
+    <div class="changing-text"></div>
 
     <script>
-        const lines = [
-            "Adding over $200MM value to an acquisition target.",
-            "The largest ever launch of an asset manager.",
-            "Award winning launch of a Fintech portfolio brand.",
-            "Award winning repositioning of a consumer tech giant for a B2B audience.",
-            "B2B positioning, content and social for the largest global social media company.",
-            "Award winning innovation in experiential and content for a global tech manufacturer.",
-            "Industry leading environmental thought leadership for partnership between a global management consultancy and an oil major."
+        const textGroups = [
+            ["Adding over $200MM value", "to an acquisition target."],
+            ["The largest ever launch", "of an asset manager."],
+            ["Award winning launch of a", "Fintech portfolio brand."],
+            ["Award winning repositioning", "of a consumer tech giant", "for a B2B audience."],
+            ["B2B positioning, content and", "social for the largest global", "social media company."],
+            ["Award winning innovation in", "experiential and content", "for a global tech manufacturer."],
+            ["Industry leading environmental", "thought leadership for partnership", "between a global consultancy", "and an oil major."]
         ];
 
-        function changeLinesTextAnimation(element, text, callback) {
+        function shuffleText(element, textLines, callback) {
+            element.innerHTML = textLines.map(line => `<div>${line.split(' ').map(word => `<span>${word}</span>`).join(' ')}</div>`).join('');
+            const spans = element.querySelectorAll('span');
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-            element.textContent = "";
-            let output = new Array(text.length).fill(" ");
-            let i = 0;
+            let completed = 0;
 
-            function revealNextLetter() {
-                if (i >= text.length) {
-                    setTimeout(() => removeText(element, text, callback), 1000);
-                    return;
-                }
-                if (text[i] === " ") {
-                    output[i] = " ";
-                    i++;
-                    revealNextLetter();
-                    return;
-                }
+            spans.forEach((span) => {
+                let word = span.textContent;
+                let output = new Array(word.length).fill(" ");
+                let i = 0;
 
-                let count = 0;
-                let iterations = 10;
-                const interval = setInterval(() => {
-                    output[i] = chars[Math.floor(Math.random() * chars.length)];
-                    element.textContent = output.join("");
-                    if (++count >= iterations) {
-                        clearInterval(interval);
-                        output[i] = text[i];
-                        element.textContent = output.join("");
-                        i++;
-                        setTimeout(revealNextLetter, 1);
+                function revealNextLetter() {
+                    if (i >= word.length) {
+                        completed++;
+                        if (completed === spans.length && callback) setTimeout(callback, 1000);
+                        return;
                     }
-                }, 1);
-            }
-            
-            revealNextLetter();
+                    let count = 0;
+                    let iterations = 10;
+                    const interval = setInterval(() => {
+                        output[i] = chars[Math.floor(Math.random() * chars.length)];
+                        span.textContent = output.join("");
+                        if (++count >= iterations) {
+                            clearInterval(interval);
+                            output[i] = word[i];
+                            span.textContent = output.join("");
+                            i++;
+                            setTimeout(revealNextLetter, 50);
+                        }
+                    }, 10);
+                }
+                revealNextLetter();
+            });
         }
 
-        function removeText(element, text, callback) {
-            let i = text.length - 1;
-            let output = text.split("");
+        function removeText(element, callback) {
+            const spans = element.querySelectorAll('span');
+            let completed = 0;
+            spans.forEach((span) => {
+                let text = span.textContent;
+                let output = text.split("");
+                let i = text.length - 1;
 
-            function hideNextLetter() {
-                if (i < 0) {
-                    setTimeout(callback, 500);
-                    return;
-                }
-                if (text[i] === " ") {
+                function hideNextLetter() {
+                    if (i < 0) {
+                        completed++;
+                        if (completed === spans.length && callback) setTimeout(callback, 500);
+                        return;
+                    }
+                    output[i] = " ";
+                    span.textContent = output.join("");
                     i--;
-                    hideNextLetter();
-                    return;
+                    setTimeout(hideNextLetter, 50);
                 }
-                
-                output[i] = " ";
-                element.textContent = output.join("");
-                i--;
-                setTimeout(hideNextLetter, 50);
-            }
-            
-            hideNextLetter();
+                hideNextLetter();
+            });
         }
 
         function startLoop(index = 0) {
-            const element = document.querySelector(".shuffle-text");
-            changeLinesTextAnimation(element, lines[index], () => {
-                startLoop((index + 1) % lines.length);
+            const element = document.querySelector(".changing-text");
+            shuffleText(element, textGroups[index], () => {
+                removeText(element, () => {
+                    startLoop((index + 1) % textGroups.length);
+                });
             });
         }
 
         document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll(".shuffle-text").forEach(el => shuffleText(el, [el.textContent]));
             startLoop();
         });
     </script>
