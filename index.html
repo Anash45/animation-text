@@ -84,7 +84,7 @@
                             return;
                         }
                         let count = 0;
-                        let iterations = 10;
+                        let iterations = 5;
                         const interval = setInterval(() => {
                             output[i] = chars[Math.floor(Math.random() * chars.length)];
                             div.textContent = output.join("");
@@ -93,7 +93,7 @@
                                 output[i] = text[i];
                                 div.textContent = output.join("");
                                 i++;
-                                setTimeout(revealNextLetter, 2);
+                                setTimeout(revealNextLetter, 1);
                             }
                         }, 0.5);
                     }
