@@ -1,131 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text Shuffle Effect</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .heading {
-            font-size: 150px;
-            line-height: 100%;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        .ft-box{
-            width: 1320px;
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-            justify-content: space-between;
-            padding: 30px;
-            min-height: 800px;
-            background-color: rgba(85, 185, 245, 1);
-        }
 
-        .changing-text{
-            font-size: 54px;
-            line-height: 100%;
-        }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Text Shuffle Effect</title>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
-        .ft-simple-text{
-            font-size: 32px;
-            line-height: 100%;
-        }
-    </style>
-</head>
-<body>
-    <div class="ft-box">
-        <div class="changing-text"></div>
-        <div class="ft-box-bottom">
-            <div class="heading shuffle-text">Award winning.</div>
-            <p class="ft-simple-text">We help businesses and brands connect with customers and influencers more effectively. From major multinationals to small businesses, throughout the funnel, we leverage innovative thinking and new technology without the constraints and overheads of traditional players.</p>
+            body {
+                font-family: "Inter", sans-serif;
+            }
+
+            .heading {
+                font-size: 150px;
+                line-height: 100%;
+                font-weight: 600;
+                margin-bottom: 20px;
+            }
+
+            .ft-box {
+                width: 1320px;
+                display: flex;
+                flex-direction: column;
+                gap: 40px;
+                justify-content: space-between;
+                padding: 60px 40px 60px 58px;
+                min-height: 800px;
+                background-color: rgba(85, 185, 245, 1);
+            }
+
+            .changing-text {
+                font-size: 54px;
+                font-weight: 300;
+                line-height: 100%;
+            }
+
+            .ft-simple-text {
+                font-weight: 300;
+                font-size: 32px;
+                line-height: 110%;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="ft-box">
+            <div class="changing-text"></div>
+            <div class="ft-box-bottom">
+                <div class="heading shuffle-text">Award winning.</div>
+                <p class="ft-simple-text">We help businesses and brands connect with customers and influencers more
+                    effectively. From major multinationals to small businesses, throughout the funnel, we leverage
+                    innovative thinking and new technology without the constraints and overheads of traditional players.
+                </p>
+            </div>
         </div>
-    </div>
-    <script>
-        const textGroups = [
-            ["Adding over $200MM value to an acquisition target."],
-            ["The largest ever launch of an asset manager."],
-            ["Award winning launch of a Fintech portfolio brand."],
-            ["Award winning repositioning of a consumer", "tech giant for a B2B audience."],
-            ["B2B positioning, content and social for the largest", "globalsocial media company."],
-            ["Award winning innovation in", "experiential and content", "for a global tech manufacturer."],
-            ["Industry leading environmental", "thought leadership for partnership", "between a global consultancy", "and an oil major."]
-        ];
+        <script>
+            const textGroups = [
+                ["Adding over $200MM value to an acquisition target."],
+                ["The largest ever launch of an asset manager."],
+                ["Award winning launch of a Fintech portfolio brand."],
+                ["Award winning repositioning of a consumer tech giant", "for a B2B audience."],
+                ["B2B positioning, content and social for the largest", "globalsocial media company."],
+                ["Award winning innovation in experiential and content", "for a global tech manufacturer."],
+                ["Industry leading environmental thought leadership for", "partnership between a global consultancy and an", "oil major."]
+            ];
 
-        function shuffleText(element, textLines, callback) {
-            element.innerHTML = textLines.map(line => `<div>${'&nbsp;'.repeat(line.length)}</div>`).join('');
-            const divs = element.querySelectorAll('div');
-            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-            let completed = 0;
+            function shuffleText(element, textLines, callback) {
+                element.innerHTML = textLines.map(line => `<div>${'&nbsp;'.repeat(line.length)}</div>`).join('');
+                const divs = element.querySelectorAll('div');
+                const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+                let completed = 0;
 
-            divs.forEach((div, index) => {
-                let text = textLines[index];
-                let output = new Array(text.length).fill(" ");
-                let i = 0;
+                divs.forEach((div, index) => {
+                    let text = textLines[index];
+                    let output = new Array(text.length).fill(" ");
+                    let i = 0;
 
-                function revealNextLetter() {
-                    if (i >= text.length) {
-                        completed++;
-                        if (completed === divs.length && callback) setTimeout(callback, 1000);
-                        return;
-                    }
-                    let count = 0;
-                    let iterations = 10;
-                    const interval = setInterval(() => {
-                        output[i] = chars[Math.floor(Math.random() * chars.length)];
-                        div.textContent = output.join("");
-                        if (++count >= iterations) {
-                            clearInterval(interval);
-                            output[i] = text[i];
-                            div.textContent = output.join("");
-                            i++;
-                            setTimeout(revealNextLetter, 5);
+                    function revealNextLetter() {
+                        if (i >= text.length) {
+                            completed++;
+                            if (completed === divs.length && callback) setTimeout(callback, 3000);
+                            return;
                         }
-                    }, 1);
-                }
-                revealNextLetter();
-            });
-        }
-
-        function removeText(element, callback) {
-            const divs = element.querySelectorAll('div');
-            let completed = 0;
-            divs.forEach((div) => {
-                let text = div.textContent;
-                let output = text.split("");
-                let i = text.length - 1;
-
-                function hideNextLetter() {
-                    if (i < 0) {
-                        completed++;
-                        if (completed === divs.length && callback) setTimeout(callback, 500);
-                        return;
+                        let count = 0;
+                        let iterations = 10;
+                        const interval = setInterval(() => {
+                            output[i] = chars[Math.floor(Math.random() * chars.length)];
+                            div.textContent = output.join("");
+                            if (++count >= iterations) {
+                                clearInterval(interval);
+                                output[i] = text[i];
+                                div.textContent = output.join("");
+                                i++;
+                                setTimeout(revealNextLetter, 2);
+                            }
+                        }, 0.5);
                     }
-                    output[i] = " ";
-                    div.textContent = output.join("");
-                    i--;
-                    setTimeout(hideNextLetter, 20);
-                }
-                hideNextLetter();
-            });
-        }
-
-        function startLoop(index = 0) {
-            const element = document.querySelector(".changing-text");
-            shuffleText(element, textGroups[index], () => {
-                removeText(element, () => {
-                    startLoop((index + 1) % textGroups.length);
+                    revealNextLetter();
                 });
-            });
-        }
+            }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            document.querySelectorAll(".shuffle-text").forEach(el => shuffleText(el, [el.textContent]));
-            startLoop();
-        });
-    </script>
-</body>
+            function removeText(element, callback) {
+                const divs = element.querySelectorAll('div');
+                let completed = 0;
+                divs.forEach((div) => {
+                    let text = div.textContent;
+                    let output = text.split("");
+                    let i = text.length - 1;
+
+                    function hideNextLetter() {
+                        if (i < 0) {
+                            completed++;
+                            if (completed === divs.length && callback) setTimeout(callback, 500);
+                            return;
+                        }
+                        output[i] = " ";
+                        div.textContent = output.join("");
+                        i--;
+                        setTimeout(hideNextLetter, 20);
+                    }
+                    hideNextLetter();
+                });
+            }
+
+            function startLoop(index = 0) {
+                const element = document.querySelector(".changing-text");
+                shuffleText(element, textGroups[index], () => {
+                    removeText(element, () => {
+                        startLoop((index + 1) % textGroups.length);
+                    });
+                });
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                document.querySelectorAll(".shuffle-text").forEach(el => shuffleText(el, [el.textContent]));
+                startLoop();
+            });
+        </script>
+    </body>
+
 </html>
